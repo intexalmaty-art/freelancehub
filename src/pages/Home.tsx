@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react';
 export default function Home() {
   const [userMode, setUserMode] = useState<'client' | 'freelancer'>('client');
   const [searchQuery, setSearchQuery] = useState('');
+  const [likedSpecialists, setLikedSpecialists] = useState<(string | number)[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<(string | number)[]>([]);
   const navigate = useNavigate();
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -21,6 +23,21 @@ export default function Home() {
       // Searching for work
       navigate(`/jobs?q=${encodeURIComponent(searchQuery)}`);
     }
+  };
+
+  const toggleLike = (id: string | number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLikedSpecialists(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleApply = (id: string | number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (appliedJobs.includes(id)) return;
+    setAppliedJobs(prev => [...prev, id]);
   };
 
   return (
@@ -145,7 +162,7 @@ export default function Home() {
             <p className="text-brand-gray text-lg font-medium max-w-2xl mx-auto">Самые горячие и высокооплачиваемые заказы на сегодня</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
             {jobs.map((job, idx) => (
               <motion.div 
                 whileHover={{ y: -15 }}
@@ -160,8 +177,14 @@ export default function Home() {
                     <span className="px-4 py-2 rounded-xl bg-white/40 text-brand-violet text-[10px] font-black uppercase tracking-[0.2em] border border-white/50">
                       {job.type}
                     </span>
-                    <button className="p-3 bg-white/20 rounded-full hover:bg-brand-accent transition-all">
-                      <Heart className="w-5 h-5 text-white group-hover:fill-current" />
+                    <button 
+                      onClick={(e) => toggleLike(job.id, e)}
+                      className={cn(
+                        "p-3 rounded-full transition-all",
+                        likedSpecialists.includes(job.id) ? "bg-brand-accent text-white" : "bg-white/20 text-white hover:bg-brand-accent/50"
+                      )}
+                    >
+                      <Heart className={cn("w-5 h-5", likedSpecialists.includes(job.id) && "fill-current")} />
                     </button>
                   </div>
                   <h3 className="font-black text-2xl text-white mb-6 leading-tight group-hover:text-white transition-colors font-display tracking-tight">{job.title}</h3>
@@ -181,10 +204,26 @@ export default function Home() {
                     <MapPin className="w-4 h-4" />
                     {job.location}
                   </div>
-                  <button className="btn-accent !py-4 !px-8 !rounded-xl !text-[10px] !uppercase !tracking-widest">Отклик</button>
+                  <button 
+                    onClick={(e) => handleApply(job.id, e)}
+                    disabled={appliedJobs.includes(job.id)}
+                    className={cn(
+                      "btn-accent !py-4 !px-8 !rounded-xl !text-[10px] !uppercase !tracking-widest transition-all",
+                      appliedJobs.includes(job.id) ? "bg-emerald-500 !text-white opacity-100" : ""
+                    )}
+                  >
+                    {appliedJobs.includes(job.id) ? "Откликнуто" : "Отклик"}
+                  </button>
                 </div>
               </motion.div>
             ))}
+          </div>
+
+          <div className="flex justify-center">
+            <Link to="/jobs" className="btn-accent !px-16 !py-5 flex items-center gap-4 text-sm uppercase tracking-widest shadow-2xl shadow-brand-accent/20">
+              Посмотреть все проекты
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </Link>
           </div>
         </div>
       </section>
@@ -194,7 +233,10 @@ export default function Home() {
         <div className="container-wide">
           <div className="flex flex-col md:flex-row justify-between items-center gap-10 mb-24">
             <h2 className="text-4xl md:text-6xl font-black text-brand-dark tracking-tighter font-display">Твои <span className="text-gradient">герои</span></h2>
-            <button className="btn-primary">Все эксперты</button>
+            <Link to="/category/all" className="btn-primary !px-10 !py-4 text-xs tracking-widest flex items-center gap-3">
+              Все эксперты
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">

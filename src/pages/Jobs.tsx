@@ -3,8 +3,27 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { jobs } from '../constants';
+import React, { useState } from 'react';
 
 export default function Jobs() {
+  const [appliedJobs, setAppliedJobs] = useState<(string | number)[]>([]);
+  const [likedJobs, setLikedJobs] = useState<(string | number)[]>([]);
+
+  const toggleLike = (id: string | number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLikedJobs(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleApply = (id: string | number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (appliedJobs.includes(id)) return;
+    setAppliedJobs(prev => [...prev, id]);
+  };
+
   return (
     <div className="min-h-screen">
       <div className="bg-white/40 backdrop-blur-3xl border-b border-white/50 py-20 relative overflow-hidden">
@@ -113,8 +132,14 @@ export default function Jobs() {
                       <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Опубликовано {job.posted}</span>
                     </div>
                   </div>
-                  <button className="p-4 rounded-2xl bg-slate-50 text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all shadow-sm">
-                    <Heart className="w-6 h-6" />
+                  <button 
+                    onClick={(e) => toggleLike(job.id, e)}
+                    className={cn(
+                      "p-4 rounded-2xl transition-all shadow-sm",
+                      likedJobs.includes(job.id) ? "bg-rose-50 text-rose-500" : "bg-slate-50 text-slate-300 hover:text-rose-500 hover:bg-rose-50"
+                    )}
+                  >
+                    <Heart className={cn("w-6 h-6", likedJobs.includes(job.id) && "fill-current")} />
                   </button>
                 </div>
 
@@ -142,9 +167,16 @@ export default function Jobs() {
                         </div>}
                     </div>
                   </div>
-                  <Link to="#" className="btn-primary !py-4 !px-10 !rounded-2xl text-xs uppercase tracking-widest">
-                    Откликнуться
-                  </Link>
+                  <button 
+                    onClick={(e) => handleApply(job.id, e)}
+                    disabled={appliedJobs.includes(job.id)}
+                    className={cn(
+                      "btn-primary !py-4 !px-10 !rounded-2xl text-xs uppercase tracking-widest transition-all",
+                      appliedJobs.includes(job.id) ? "bg-emerald-500 !text-white border-emerald-500" : ""
+                    )}
+                  >
+                    {appliedJobs.includes(job.id) ? "Откликнуто" : "Откликнуться"}
+                  </button>
                 </div>
               </motion.div>
             ))}

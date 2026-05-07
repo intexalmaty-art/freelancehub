@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { categories, specialists } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
@@ -25,6 +25,15 @@ export default function Category() {
   const [selectedCity, setSelectedCity] = useState<string[]>([]);
   const [minRating, setMinRating] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [likedSpecialists, setLikedSpecialists] = useState<(string | number)[]>([]);
+
+  const toggleLike = (id: string | number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLikedSpecialists(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
 
   // Custom logic to get category details
   const categoryData = useMemo(() => {
@@ -347,8 +356,14 @@ export default function Category() {
                           </div>
                         </div>
                         {viewMode === 'grid' && (
-                          <button className="p-3.5 rounded-2xl bg-slate-50 text-slate-300 hover:text-rose-500 hover:fill-rose-500 hover:bg-rose-50 transition-all shadow-sm" onClick={(e) => { e.preventDefault(); }}>
-                            <Heart className="w-5 h-5" />
+                          <button 
+                            className={cn(
+                              "p-3.5 rounded-2xl transition-all shadow-sm",
+                              likedSpecialists.includes(pro.id) ? "bg-rose-50 text-rose-500" : "bg-slate-50 text-slate-300 hover:text-rose-500 hover:fill-rose-500 hover:bg-rose-50"
+                            )} 
+                            onClick={(e) => toggleLike(pro.id, e)}
+                          >
+                            <Heart className={cn("w-5 h-5", likedSpecialists.includes(pro.id) && "fill-current")} />
                           </button>
                         )}
                       </div>
@@ -388,8 +403,14 @@ export default function Category() {
                       
                       {viewMode === 'list' && (
                         <div className="absolute top-4 right-4">
-                           <button className="p-3 text-slate-300 hover:text-rose-500 transition-colors" onClick={(e) => { e.preventDefault(); }}>
-                             <Heart className="w-6 h-6" />
+                           <button 
+                            className={cn(
+                              "p-3 transition-colors",
+                              likedSpecialists.includes(pro.id) ? "text-rose-500" : "text-slate-300 hover:text-rose-500"
+                            )} 
+                            onClick={(e) => toggleLike(pro.id, e)}
+                           >
+                             <Heart className={cn("w-6 h-6", likedSpecialists.includes(pro.id) && "fill-current")} />
                            </button>
                         </div>
                       )}
