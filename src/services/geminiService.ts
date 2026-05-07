@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { specialists, categories } from "../constants";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
 const SYSTEM_PROMPT = `Вы — ИИ-ассистент биржи фриланса FreelanceHub. 
 Ваша цель — помогать клиентам находить подходящих специалистов.
