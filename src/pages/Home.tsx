@@ -232,7 +232,7 @@ export default function Home() {
       <section className="py-32">
         <div className="container-wide">
           <div className="flex flex-col md:flex-row justify-between items-center gap-10 mb-24">
-            <h2 className="text-4xl md:text-6xl font-black text-brand-dark tracking-tighter font-display">Твои <span className="text-gradient">герои</span></h2>
+            <h2 className="text-4xl md:text-6xl font-black text-brand-dark tracking-tighter font-display">Топ <span className="text-gradient">специалистов</span></h2>
             <Link to="/category/all" className="btn-primary !px-10 !py-4 text-xs tracking-widest flex items-center gap-3">
               Все эксперты
               <ArrowRight className="w-4 h-4" />
